@@ -1,0 +1,186 @@
+---
+title: "Trial Code"
+author: "Aoi Kawahara"
+date: "2025-02-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## trialデータについて
+
+本番は30万件以上のポストを分析する予定だが、使用する変数等の挙動確認のため、trialではまず1,000件のポストを走らせてみる。
+
+## 必要ライブラリの読み込み
+
+```{r library}
+library(data.table)
+library(tidyverse)
+library(tidytext)
+library(wordcloud)
+library(topicmodels)
+library(tm)
+library(dplyr)
+library(qdap)
+library(plotrix)
+library(dendextend)
+library(tokenizers)
+library(textclean)
+```
+
+## データの読み込み
+
+```{r df}
+setwd('/Users/aoikawahara/Library/CloudStorage/OneDrive-KULeuven/Leuven/01_Master Thesis/Workplace')
+
+df = fread("data/part_1/may_july_chunk_1.csv.gz")
+str(df)
+```
+
+## 必要データの選択
+
+-   テキストが英語
+
+-   カラム名がtextとepochだけののデータフレームに変換
+
+```{r subset_df}
+
+df <- df[1:1000,] %>%
+  subset(lang == 'en') %>%
+  subset(select = c(text, epoch))
+```
+
+## テキストのクリーニング
+
+Kanmaz(2023)より
+
+-   Lowercasing the characters
+
+-   Removal of stopwords
+
+-   Stemming the words
+
+-   Removal of hashtags
+
+-   Removal of user mentions
+
+-   Removal of links
+
+-   Removal of emojis
+
+```{r text_organization}
+qdap_clean <- function(x) {
+  x <- replace_abbreviation(x)            　 # "Dr." → "Doctor"
+  x <- replace_contraction(x)                # "can't" → "cannot"
+  x <- replace_ordinal(x)                    # "1st" → "first"
+  x <- gsub("\\d+", "", x)                   # Removal of numbers
+  x <- tolower(x)                            # Lowercasing the characters
+  x <- str_remove_all(x, "#\\S+") 　　　　　 # Removal of hashtags
+  x <- str_remove_all(x, "@\\S+")  　　　　　# Removal of user mentions
+  x <- replace_symbol(x)                     # "&" → "and"
+  x <- str_remove_all(x, "http[s]?://\\S+")  # Removal of links
+  x <- replace_emoji(x)                      # Emojis → Word forms equivalents
+  return(x)
+  }
+
+tm_clean <- function(corpus) {
+  corpus <- tm_map(corpus, removePunctuation)  # Remove punctuation (句読点)
+  corpus <- tm_map(corpus, stripWhitespace)    # 余分な余白
+  corpus <- tm_map(corpus, removeWords, stopwords("en"))    # Remove stopwords
+  corpus <- tm_map(corpus, content_transformer(stemDocument))  # Stemming
+  return(corpus)}
+
+qdap_cleaned_df <- qdap_clean(df$text)
+corp <- VCorpus(VectorSource(qdap_cleaned_df)) %>%
+  tm_clean()
+
+# qdap_cleanの挙動確認
+df$text[25]
+qdap_cleaned_df[25]
+```
+
+## Term Document Matrixの作成
+
+```{r tdm}
+tdm <- TermDocumentMatrix(corp)
+tdm_m <- as.matrix(tdm)
+
+tdm_m[which(is.na(tdm_m))] <- 0
+```
+
+## Bar Plotの作成
+
+```{r bar_plot}
+freq <- rowSums(tdm_m)
+freq <- sort(freq, decreasing = TRUE)
+
+barplot(freq[1:20], col = "tan", las = 2)
+```
+
+## WordCloudの作成
+
+```{r wordcloud}
+
+wordcloud(names(freq), freq, max.words = 100, color = "blue")
+```
+
+## Word Association "biden"
+
+```{r assoc_biden}
+assoc <- findAssocs(tdm, "biden", 0.12)
+assoc
+
+assoc_df <- list_vect2df(assoc, col2 = "word", col3 = "score")
+
+ggplot(assoc_df, aes(score, word)) + 
+  geom_point(size = 3) +
+  labs(title = "Words associated with 'biden'") +
+  theme_minimal()
+```
+
+## Word Association "trump"
+
+```{r assoc_trump}
+assoc_trump <- findAssocs(tdm, "trump", 0.15)
+
+assoc_trump_df <- list_vect2df(assoc_trump, col2 = "word", col3 = "score")
+
+ggplot(assoc_trump_df, aes(score, word)) + 
+  geom_point(size = 3) +
+  labs(title = "Words associated with 'trump'") +
+  theme_minimal()
+```
+
+## LDA with 3 topics
+
+Kanmaz(2023)では3\~25 Topicsで試し、coherence scoreを比較していた。
+
+```{r lda_3}
+dtm <- DocumentTermMatrix(corp)
+
+row_sums <- rowSums(as.matrix(dtm))  # 空白の行がある確認
+dtm <- dtm[row_sums > 0, ]  # 単語が含まれていない空の文書を削除
+
+lda_3 <- LDA(dtm, k = 3, method = "Gibbs", control = list(seed = 42))
+
+glimpse(lda_3)
+
+lda_3 <- lda_3 %>% 
+  tidy(matrix = "beta")
+lda_3 %>% 
+  arrange(desc(beta))
+
+# Visualization of top 15 terms by topic (3topics)
+word_3 <- lda_3 %>% 
+  group_by(topic) %>% 
+  slice_max(beta, n = 15) %>% 
+  ungroup() %>%
+  mutate(term2 = fct_reorder(term, beta))
+
+ggplot(word_3, aes(x = term2, y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip()
+```
