@@ -9,11 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## trialデータについて
+## About trial.Rmd
 
-本番は30万件以上のポストを分析する予定だが、使用する変数等の挙動確認のため、trialではまず1,000件のポストを走らせてみる。
+本番は30万件以上のポストを扱う予定だが、使用する変数等の挙動確認のため、trialではまず1,000件のポストで分析を実行してみる。
 
-## 必要ライブラリの読み込み
+I will deal with more than 300k posts for the actual thesis. This trial is conducted on 1k posts for the purpose of testing the code and functions below.
+
+## Load libraries
 
 ```{r library}
 library(data.table)
@@ -30,20 +32,19 @@ library(tokenizers)
 library(textclean)
 ```
 
-## データの読み込み
+## Load data
 
 ```{r df}
 setwd('/Users/aoikawahara/Library/CloudStorage/OneDrive-KULeuven/Leuven/01_Master Thesis/Workplace')
 
 df = fread("data/part_1/may_july_chunk_1.csv.gz")
-str(df)
 ```
 
-## 必要データの選択
+## Select necessary columns
 
--   テキストが英語
+-   Select English posts / テキストが英語
 
--   カラム名がtextとepochだけののデータフレームに変換
+-   Transform a data frame with columns (text, epoch) / カラム名がtextとepochだけののデータフレームに変換
 
 ```{r subset_df}
 
@@ -52,9 +53,20 @@ df <- df[1:1000,] %>%
   subset(select = c(text, epoch))
 ```
 
-## テキストのクリーニング
+## Fast descriptives
 
-Kanmaz(2023)より
+```{r descriptives}
+df_epoch <- data.frame(table(df$epoch))
+colnames(df_epoch) <- c("epoch", "count")
+
+ggplot(df_epoch, aes(x = as.numeric(epoch), y = count)) +
+  geom_line() +
+  labs(title = "Number of posts")
+```
+
+## Clean text
+
+From Kanmaz(2023)
 
 -   Lowercasing the characters
 
@@ -101,7 +113,7 @@ df$text[25]
 qdap_cleaned_df[25]
 ```
 
-## Term Document Matrixの作成
+## Create Term Document Matrix
 
 ```{r tdm}
 tdm <- TermDocumentMatrix(corp)
@@ -110,7 +122,7 @@ tdm_m <- as.matrix(tdm)
 tdm_m[which(is.na(tdm_m))] <- 0
 ```
 
-## Bar Plotの作成
+## Plot bar chart - term frequency
 
 ```{r bar_plot}
 freq <- rowSums(tdm_m)
@@ -119,7 +131,7 @@ freq <- sort(freq, decreasing = TRUE)
 barplot(freq[1:20], col = "tan", las = 2)
 ```
 
-## WordCloudの作成
+## Plot WordCloud
 
 ```{r wordcloud}
 
@@ -155,7 +167,7 @@ ggplot(assoc_trump_df, aes(score, word)) +
 
 ## LDA with 3 topics
 
-Kanmaz(2023)では3\~25 Topicsで試し、coherence scoreを比較していた。
+Kanmaz(2023)は3\~25 topicsで試し、coherence scoreを比較していた。
 
 ```{r lda_3}
 dtm <- DocumentTermMatrix(corp)
@@ -184,3 +196,51 @@ ggplot(word_3, aes(x = term2, y = beta, fill = as.factor(topic))) +
   facet_wrap(~ topic, scales = "free") +
   coord_flip()
 ```
+
+## LDA with 9 topics
+
+```{r lda_9}
+
+lda_9 <- LDA(dtm, k = 9)
+glimpse(lda_9)
+
+lda_9 <- lda_9 %>% 
+  tidy(matrix = "beta")
+lda_9 %>% 
+  arrange(desc(beta))
+
+# Visualization of top 10 terms by topic (9topics)
+word_9 <- lda_9 %>% 
+  group_by(topic) %>% 
+  slice_max(beta, n = 10) %>% 
+  ungroup() %>%
+  mutate(term2 = fct_reorder(term, beta))
+
+ggplot(word_9, aes(x = term2, y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip()
+```
+
+## Select number of topics for LDA model
+
+(Coherence score...モデルによって生成されたトピックの一貫性と解釈可能性を評価。)
+
+<https://cran.r-project.org/web/packages/ldatuning/vignettes/topics.html>
+
+```{r select_k}
+
+library("ldatuning")
+
+result <- FindTopicsNumber(
+  dtm,
+  topics = seq(from = 2, to = 15, by = 1),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  mc.cores = 2L,
+  verbose = TRUE)
+
+FindTopicsNumber_plot(result)
+```
+
+It can be estimated that the 5 topcs is the most optimal?
