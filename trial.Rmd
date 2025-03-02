@@ -30,6 +30,7 @@ library(plotrix)
 library(dendextend)
 library(tokenizers)
 library(textclean)
+library(ggthemes)
 ```
 
 ## Load data
@@ -50,7 +51,8 @@ df = fread("data/part_1/may_july_chunk_1.csv.gz")
 
 df <- df[1:1000,] %>%
   subset(lang == 'en') %>%
-  subset(select = c(text, epoch))
+  subset(select = c(text, epoch, retweetCount, likeCount)) %>%
+  mutate(id = row_number())
 ```
 
 ## Fast descriptives
@@ -108,9 +110,15 @@ qdap_cleaned_df <- qdap_clean(df$text)
 corp <- VCorpus(VectorSource(qdap_cleaned_df)) %>%
   tm_clean()
 
+cleaned_text <- lapply(corp, function(doc) doc$content)
+df_cleaned_text <- data.frame(id = seq_along(cleaned_text),
+                              text = unlist(cleaned_text),
+                              stringsAsFactors = FALSE)
+
 # qdap_cleanの挙動確認
 df$text[25]
 qdap_cleaned_df[25]
+cleaned_text[25]
 ```
 
 ## Create Term Document Matrix
@@ -197,31 +205,6 @@ ggplot(word_3, aes(x = term2, y = beta, fill = as.factor(topic))) +
   coord_flip()
 ```
 
-## LDA with 9 topics
-
-```{r lda_9}
-
-lda_9 <- LDA(dtm, k = 9)
-glimpse(lda_9)
-
-lda_9 <- lda_9 %>% 
-  tidy(matrix = "beta")
-lda_9 %>% 
-  arrange(desc(beta))
-
-# Visualization of top 10 terms by topic (9topics)
-word_9 <- lda_9 %>% 
-  group_by(topic) %>% 
-  slice_max(beta, n = 10) %>% 
-  ungroup() %>%
-  mutate(term2 = fct_reorder(term, beta))
-
-ggplot(word_9, aes(x = term2, y = beta, fill = as.factor(topic))) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~ topic, scales = "free") +
-  coord_flip()
-```
-
 ## Select number of topics for LDA model
 
 (Coherence score...モデルによって生成されたトピックの一貫性と解釈可能性を評価。)
@@ -229,7 +212,6 @@ ggplot(word_9, aes(x = term2, y = beta, fill = as.factor(topic))) +
 <https://cran.r-project.org/web/packages/ldatuning/vignettes/topics.html>
 
 ```{r select_k}
-
 library("ldatuning")
 
 result <- FindTopicsNumber(
@@ -244,3 +226,193 @@ FindTopicsNumber_plot(result)
 ```
 
 It can be estimated that the 5 topcs is the most optimal?
+
+## LDA with 5 topics
+
+```{r lda_5}
+lda_5 <- LDA(dtm, k = 5)
+glimpse(lda_5)
+
+lda_5 <- lda_5 %>% 
+  tidy(matrix = "beta")
+lda_5 %>% 
+  arrange(desc(beta))
+
+# Visualization of top 10 terms by topic (9topics)
+word_5 <- lda_5 %>% 
+  group_by(topic) %>% 
+  slice_max(beta, n = 10) %>% 
+  ungroup() %>%
+  mutate(term2 = fct_reorder(term, beta))
+
+ggplot(word_5, aes(x = term2, y = beta, fill = as.factor(topic))) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip()
+```
+
+## TF-IDF Vectorization
+
+```{r tfidf}
+tfidf_tdm <- TermDocumentMatrix(corp, control = list(weighting = weightTfIdf))
+tfidf_tdm_m <- as.matrix(tfidf_tdm)
+
+tfidf_tdm_m[c("biden", "trump", "maga"), 20:30]
+
+tfidf_freq <- rowSums(tfidf_tdm_m)
+tfidf_freq <- sort(tfidf_freq, decreasing = TRUE)
+
+wordcloud(names(tfidf_freq), tfidf_freq, max.words = 40, color = "blue")
+```
+
+## Sentiment Analysis - Polarity (fast & dirty)
+
+```{r polarity}
+pol <- polarity(df_cleaned_text$text[1:891])
+summary(pol$all$polarity)
+
+ggplot(pol$all, aes(x = polarity, y = ..density..)) + 
+  geom_histogram(binwidth = 0.25, fill = "#bada55", colour = "grey60") +
+  geom_density(size = 0.75) +
+  theme_gdocs()
+```
+
+## Sentiment Analysis - Polarity (tidy)
+
+```{r polarity_tidy}
+tidy_texts <- df_cleaned_text %>% 
+  unnest_tokens(word, text)
+
+tidy_texts <- tidy_texts %>% 
+  group_by(id) %>% 
+  mutate(original_word_order = seq_along(word))
+
+bing <- get_sentiments("bing")
+
+pos_neg <- tidy_texts %>% 
+  inner_join(bing, by = c("word" = "word")) %>%
+  count(sentiment) %>%
+  pivot_wider(names_from = sentiment, values_from = n, values_fill = 0) %>% 
+  mutate(polarity = positive - negative)
+
+ggplot(pos_neg, aes(x = polarity, y = ..density..)) + 
+  geom_histogram(binwidth = 1, fill = "#bada55", colour = "grey60") +
+  geom_density(size = 0.75) +
+  theme_gdocs()
+```
+
+## Organize positive/negative words
+
+```{r pos}
+pos_terms <- df_cleaned_text %>%
+  mutate(polarity = pol$all$polarity) %>%
+  filter(polarity > 0) %>%
+  pull(text) %>%
+  paste(collapse = " ")
+
+neg_terms <- df_cleaned_text %>%
+  mutate(polarity = pol$all$polarity) %>%
+  filter(polarity < 0) %>%
+  pull(text) %>% 
+  paste(collapse = " ")
+
+all_corp <- c(pos_terms, neg_terms) %>% 
+  VectorSource() %>% 
+  VCorpus()
+
+all_tdm <- TermDocumentMatrix(all_corp,
+                              control = list(weighting = weightTfIdf))
+
+all_tdm_m <- as.matrix(all_tdm)
+colnames(all_tdm_m) <- c("positive", "negative")
+all_tdm_df <- as.data.frame(all_tdm_m)
+all_tdm_df$term <- rownames(all_tdm_df)
+
+comparison.cloud(all_tdm_m, max.words = 18, colors = c("darkgreen","darkred"))
+```
+
+## Bar plot of positive terms
+
+```{r bar_pos}
+order_by_pos <- all_tdm_df %>%
+  arrange(desc(positive)) %>%
+  head(20)
+
+ggplot(order_by_pos, aes(x = reorder(term, positive), y = positive)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  labs(title = "Top 20 Terms by Positive Score",
+       x = "Terms",
+       y = "Positive") +
+  coord_flip() +
+  theme_gdocs() 
+```
+
+## Bar plot of negative terms
+
+```{r bar_neg}
+order_by_neg <- all_tdm_df %>%
+  arrange(desc(negative)) %>%
+  head(20)
+
+ggplot(order_by_neg, aes(x = reorder(term, negative), y = negative)) +
+  geom_bar(stat = "identity", fill = "darkred") +
+  labs(title = "Top 20 Terms by Negative Score",
+       x = "Terms",
+       y = "Negative") +
+  coord_flip() +
+  theme_gdocs() 
+```
+
+## Polarity vs Word effort
+
+```{r pol_n}
+pos_neg_pol <- tidy_texts %>% 
+  count(id) %>%
+  inner_join(pos_neg) %>%
+  mutate(pol = ifelse(polarity >= 0, "Positive", "Negative"))
+
+ggplot(pos_neg_pol, aes(polarity, n, color = pol)) + 
+  geom_point(alpha = 0.25) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_gdocs() +
+  ggtitle("Relationship between word effort & polarity")
+```
+
+## Sentiment vs Like count
+
+```{r sent_like}
+
+df_sent <- df %>% 
+  inner_join(pos_neg, by = c("id" = "id")) %>%
+  select(c(id, retweetCount, likeCount, polarity))
+
+ggplot(df_sent, aes(x = polarity, y = likeCount)) + 
+  geom_point() +
+  theme_minimal() +
+  ggtitle("Relationship between like count & polarity")
+
+df_sent_outlier <- df_sent %>%
+  filter(likeCount < 2000)
+
+ggplot(df_sent_outlier, aes(x = polarity, y = likeCount)) + 
+  geom_point() +
+  theme_minimal() +
+  ggtitle("Relationship between like count & polarity")
+```
+
+## Sentiment vs Retweet count
+
+```{r sent_ret}
+ggplot(df_sent, aes(x = polarity, y = retweetCount)) + 
+  geom_point() +
+  theme_minimal() +
+  ggtitle("Relationship between retweet count & polarity")
+
+df_sent_outlier <- df_sent %>%
+  filter(likeCount < 300)
+
+ggplot(df_sent_outlier, aes(x = polarity, y = likeCount)) + 
+  geom_point() +
+  theme_minimal() +
+  ggtitle("Relationship between like count & polarity")
+```
