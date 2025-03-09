@@ -1,0 +1,55 @@
+---
+title: "EDA"
+author: "Aoi Kawahara"
+date: "2025-03-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About EDA.Rmd
+
+Exploratory data analysisを行う。
+
+```{r library}
+library(data.table)
+library(tidyverse)
+library(tidytext)
+library(wordcloud)
+library(topicmodels)
+library(tm)
+library(dplyr)
+library(qdap)
+library(plotrix)
+library(dendextend)
+library(tokenizers)
+library(textclean)
+library(ggthemes)
+```
+
+Load data
+
+```{r df}
+setwd('/Users/aoikawahara/Library/CloudStorage/OneDrive-KULeuven/Leuven/01_Master Thesis/Workplace')
+
+df = fread("data/part_1/may_july_chunk_1.csv.gz")
+
+summary(df)
+```
+
+```{r}
+df <- df[1:1000,] %>%
+  subset(lang == 'en') %>%
+  subset(select = c(text, epoch, retweetCount, likeCount)) %>%
+  mutate(id = row_number())
+
+
+df_epoch <- data.frame(table(df$epoch))
+colnames(df_epoch) <- c("epoch", "count")
+
+ggplot(df_epoch, aes(x = as.numeric(epoch), y = count)) +
+  geom_line() +
+  labs(title = "Number of posts")
+```
