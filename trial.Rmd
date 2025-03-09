@@ -233,10 +233,6 @@ It can be estimated that the 5 topcs is the most optimal?
 lda_5 <- LDA(dtm, k = 5)
 class(lda_5)
 
-topic_prob <- posterior(lda_5)$topics
-df_topic <- df[-342, ] %>%
-  mutate(assigned_topics, apply(topic_prob, 1, which.max))
-
 # Visualization of top 10 terms by topic (5topics)
 lda_5 <- lda_5 %>% 
   tidy(matrix = "beta")
@@ -385,19 +381,7 @@ ggplot(pos_neg_pol, aes(polarity, n, color = pol)) +
 ## Sentiment vs Topics
 
 ```{r sent_topic}
-df_topic <- df_cleaned_text[-342, ] %>%
-  mutate(assigned_topics, apply(topic_prob, 1, which.max))
 
-df_sent_topic <- pos_neg[-342, ] %>%
-  inner_join(df_cleaned_text, by = c("id" = "id")) %>%
-  inner_join(df_topic, by = c("text" = "text"))
-
-
-df_sent_topic$assigned_topics <- assigned_topics
-
-
-table(duplicated(df_cleaned_text$text))
-table(duplicated(df_topic$text))
 ```
 
 ## Sentiment vs Like count
