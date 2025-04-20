@@ -918,7 +918,6 @@ dtm_filtered <- dtm_all[, selected_terms]
 
 # こんなに削ったら、topicが割り当てられないpostが出てきそう。
 
-
 #### Text Preprocessing for All Corpus ####
 
 df_f_all <- bind_rows(df_f_0704, df_f_0705, df_f_0706, df_f_0707, df_f_0708, df_f_0709, df_f_0710, df_f_0711, df_f_0712, df_f_0713, df_f_0714, df_f_0715, df_f_0716, df_f_0717, df_f_0718, df_f_0719, df_f_0720, df_f_0721, df_f_0722, df_f_0723)
@@ -960,7 +959,9 @@ df_ff_all <- df_ff_all %>% rename("topic1" = V1) %>% rename("topic2" = V2) %>% r
 
 save(df_ff_all, file = "backups/df_ff_all.rda")
 
-#### LDA EDA ####
+#### EDA ####
+
+df_ff_all_n22 <- df_ff_all %>% filter(date != '2024-07-22')
 
 summary(df_ff_all$topic1)
 #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
@@ -978,6 +979,7 @@ summary(df_ff_all$topic4)
 #  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 #  0.09588 0.24742 0.24975 0.25000 0.25228 0.68883
 
+# Document Count per Dominant Topic (All Time)
 dominant_topic_df <- as.data.frame(table(df_ff_all$dominant_topics))
 colnames(dominant_topic_df) <- c("Topic", "Count")
 
@@ -988,8 +990,15 @@ ggplot(dominant_topic_df, aes(x = factor(Topic), y = Count, fill = factor(Topic)
   theme_minimal() +
   theme(legend.position = "none")
 
+dominant_topic_df <- as.data.frame(table(df_ff_all_n22$dominant_topics))
+colnames(dominant_topic_df) <- c("Topic", "Count")
 
+# Topic Trends Over Time (Percentage)
 topic_by_date <- df_ff_all %>%
+  group_by(date, dominant_topics) %>%
+  summarise(count = n(), .groups = "drop")
+
+topic_by_date <- df_ff_all_n22 %>%
   group_by(date, dominant_topics) %>%
   summarise(count = n(), .groups = "drop")
 
@@ -1003,4 +1012,38 @@ ggplot(topic_by_date, aes(x = date, y = percentage, color = factor(dominant_topi
   labs(title = "Topic Trends Over Time (Percentage)", x = "Date", y = "Percentage of Posts", color = "Topic") +
   scale_x_date(date_breaks = "1 day", date_labels = "%d") +
   theme_minimal()
+
+# Linear Specification
+# lm_topic1 <- lm(percentage ~ date, data = topic_by_date)
+# summary(lm_topic1)
+
+# ggplot(topic_by_date, aes(x = date, y = percentage, color = factor(dominant_topics))) +
+#   geom_smooth(method = "lm", se = FALSE) +
+#   labs(title = "Topic Trends Over Time (Regression)") +
+#   scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+#   theme_minimal()
+
+# Averages Likes per Topic Over Time
+topic_likes <- df_ff_all %>%
+  group_by(date, dominant_topics) %>%
+  summarise(mean_likes = mean(as.integer(likeCount))) %>% 
+  ungroup()
+
+topic_likes <- df_ff_all_n22 %>%
+  group_by(date, dominant_topics) %>%
+  summarise(mean_likes = mean(as.integer(likeCount))) %>% 
+  ungroup()
+
+ggplot(topic_likes, aes(x = date, y = mean_likes, color = factor(dominant_topics))) +
+  geom_line() +
+  labs(title = "Averages Likes per Topic Over Time", x = "Date", y = "Average Like Counts", color = "Topic") +
+  theme_minimal()
+
+
+#############################
+##  4. Sentiment Analysis  ##
+#############################
+
+
+
 
