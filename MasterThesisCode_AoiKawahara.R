@@ -2,11 +2,14 @@
 ##  Master's Thesis Code - Aoi Kawahara  ##
 ###########################################
 
-########################
-## 1. Data Collection ##
-########################
+##########################
+##  1. Data Collection  ##
+##########################
 
 setwd('/Users/aoikawahara/Library/CloudStorage/OneDrive-KULeuven/Leuven/01_Master Thesis/Workplace')
+
+library(dplyr)
+library(scales)
 
 #### List 1 ####
 df_list1 <- lapply(1:20, function(i) {
@@ -528,6 +531,7 @@ sum(df_f_date_tables$nums)
 ggplot(df_f_date_tables, aes(x = date, y = nums, group = 1)) +
   geom_line() +
   labs(title = "Number of Posts by Date") +
+  scale_y_continuous(labels = comma) +
   theme(axis.text.x = element_text(angle = 90))
 
 
@@ -554,10 +558,31 @@ load("backups/df_f_0721.rda")
 load("backups/df_f_0722.rda")
 load("backups/df_f_0723.rda")
 
+setnames(df_f_0705, "cleaned_0705", "cleanedText")
+setnames(df_f_0706, "cleaned_0706", "cleanedText")
+setnames(df_f_0707, "cleaned_0707", "cleanedText")
+setnames(df_f_0708, "cleaned_0708", "cleanedText")
+setnames(df_f_0709, "cleaned_0709", "cleanedText")
+setnames(df_f_0710, "cleaned_0710", "cleanedText")
+setnames(df_f_0711, "cleaned_0711", "cleanedText")
+setnames(df_f_0712, "cleaned_0712", "cleanedText")
+setnames(df_f_0713, "cleaned_0713", "cleanedText")
+setnames(df_f_0714, "cleaned_0714", "cleanedText")
+setnames(df_f_0715, "cleaned_0715", "cleanedText")
+setnames(df_f_0716, "cleaned_0716", "cleanedText")
+setnames(df_f_0717, "cleaned_0717", "cleanedText")
+setnames(df_f_0718, "cleaned_0718", "cleanedText")
+setnames(df_f_0719, "cleaned_0719", "cleanedText")
+setnames(df_f_0720, "cleaned_0720", "cleanedText")
+setnames(df_f_0721, "cleaned_0721", "cleanedText")
+setnames(df_f_0722, "cleaned_0722", "cleanedText")
+setnames(df_f_0723, "cleaned_0723", "cleanedText")
 
-############################
-##  2. Text Preprocessing ##
-############################
+
+
+#############################
+##  2. Text Preprocessing  ##
+#############################
 
 library(tidyverse)
 library(tidytext)
@@ -637,6 +662,8 @@ corp_all <- c(corp_0704, corp_0705, corp_0706, corp_0707, corp_0708, corp_0709,
               corp_0716, corp_0717, corp_0718, corp_0719, corp_0720, corp_0721,
               corp_0722, corp_0723)
 
+save(corp_all, file = "backups/corp_all.rda")
+rm(corp_all)
 
 #### Add clean texts to data frame ####
 cleaned_0704 <- lapply(corp_0704, function(doc) doc$content)
@@ -699,9 +726,281 @@ df_f_0722$cleaned_0722 <- cleaned_0722
 cleaned_0723 <- lapply(corp_0723, function(doc) doc$content)
 df_f_0723$cleaned_0723 <- cleaned_0723
 
-df_f_0704$text[25]
-df_qdap_0704[25]
-df_f_0704$cleaned_text[25]
+df_f_0704$text[64]
+# "THE PROBLIM WITH MAGA-TRUMPISM:\n\"\"Conspiracies, entrapment, assaults, false imprisonments are part of warfare. USA citizens did not realize that white America was the enemy. Blacks, Indians and Chicanos have known for a long time the open warfare against their existence.\"\" BRUSSELL https://t.co/vhICZ0z9ue"
+df_qdap_0704[64]
+# "the problim with maga-trumpism: conspiracies, entrapment, assaults, false imprisonments are part of warfare. usa citizens did not realize that white america was the enemy. blacks, indians and chicanos have known for a long time the open warfare against their existence. brussell "
+df_f_0704$cleanedText[64]
+# "problim magatrumpism conspiracies entrapment assaults false imprisonments part warfare usa citizens realize white america enemy blacks indians chicanos known long time open warfare existence brussell "
 
-#### LDA ####
-dtm_all <- DocumentTermMatrix(corp_all)
+save(df_qdap_0704, file = "backups/df_qdap_0704.rda")
+save(df_qdap_0705, file = "backups/df_qdap_0705.rda")
+save(df_qdap_0706, file = "backups/df_qdap_0706.rda")
+save(df_qdap_0707, file = "backups/df_qdap_0707.rda")
+save(df_qdap_0708, file = "backups/df_qdap_0708.rda")
+save(df_qdap_0709, file = "backups/df_qdap_0709.rda")
+save(df_qdap_0710, file = "backups/df_qdap_0710.rda")
+save(df_qdap_0711, file = "backups/df_qdap_0711.rda")
+save(df_qdap_0712, file = "backups/df_qdap_0712.rda")
+save(df_qdap_0713, file = "backups/df_qdap_0713.rda")
+save(df_qdap_0714, file = "backups/df_qdap_0714.rda")
+save(df_qdap_0715, file = "backups/df_qdap_0715.rda")
+save(df_qdap_0716, file = "backups/df_qdap_0716.rda")
+save(df_qdap_0717, file = "backups/df_qdap_0717.rda")
+save(df_qdap_0718, file = "backups/df_qdap_0718.rda")
+save(df_qdap_0719, file = "backups/df_qdap_0719.rda")
+save(df_qdap_0720, file = "backups/df_qdap_0720.rda")
+save(df_qdap_0721, file = "backups/df_qdap_0721.rda")
+save(df_qdap_0722, file = "backups/df_qdap_0722.rda")
+save(df_qdap_0723, file = "backups/df_qdap_0723.rda")
+
+rm(df_qdap_0704)
+rm(df_qdap_0705)
+rm(df_qdap_0706)
+rm(df_qdap_0707)
+rm(df_qdap_0708)
+rm(df_qdap_0709)
+rm(df_qdap_0710)
+rm(df_qdap_0711)
+rm(df_qdap_0712)
+rm(df_qdap_0713)
+rm(df_qdap_0714)
+rm(df_qdap_0715)
+rm(df_qdap_0716)
+rm(df_qdap_0717)
+rm(df_qdap_0718)
+rm(df_qdap_0719)
+rm(df_qdap_0720)
+rm(df_qdap_0721)
+rm(df_qdap_0722)
+rm(df_qdap_0723)
+
+save(corp_0704, file = "backups/corp_0704.rda")
+save(corp_0705, file = "backups/corp_0705.rda")
+save(corp_0706, file = "backups/corp_0706.rda")
+save(corp_0707, file = "backups/corp_0707.rda")
+save(corp_0708, file = "backups/corp_0708.rda")
+save(corp_0709, file = "backups/corp_0709.rda")
+save(corp_0710, file = "backups/corp_0710.rda")
+save(corp_0711, file = "backups/corp_0711.rda")
+save(corp_0712, file = "backups/corp_0712.rda")
+save(corp_0713, file = "backups/corp_0713.rda")
+save(corp_0714, file = "backups/corp_0714.rda")
+save(corp_0715, file = "backups/corp_0715.rda")
+save(corp_0716, file = "backups/corp_0716.rda")
+save(corp_0717, file = "backups/corp_0717.rda")
+save(corp_0718, file = "backups/corp_0718.rda")
+save(corp_0719, file = "backups/corp_0719.rda")
+save(corp_0720, file = "backups/corp_0720.rda")
+save(corp_0721, file = "backups/corp_0721.rda")
+save(corp_0722, file = "backups/corp_0722.rda")
+save(corp_0723, file = "backups/corp_0723.rda")
+
+rm(corp_0704)
+rm(corp_0705)
+rm(corp_0706)
+rm(corp_0707)
+rm(corp_0708)
+rm(corp_0709)
+rm(corp_0710)
+rm(corp_0711)
+rm(corp_0712)
+rm(corp_0713)
+rm(corp_0714)
+rm(corp_0715)
+rm(corp_0716)
+rm(corp_0717)
+rm(corp_0718)
+rm(corp_0719)
+rm(corp_0720)
+rm(corp_0721)
+rm(corp_0722)
+rm(corp_0723)
+
+
+
+################
+##   3. LDA   ##
+################
+
+library(slam)
+library(tokenizers)
+library(topicmodels)
+library(topicdoc)
+library(text2vec)
+library(Matrix)
+
+#### Coherence Values ####
+
+# Create sample data frame
+
+df_sample_0704 <- df_f_0704 %>% slice_sample(n = 100)
+df_sample_0705 <- df_f_0705 %>% slice_sample(n = 100)
+df_sample_0706 <- df_f_0706 %>% slice_sample(n = 100)
+df_sample_0707 <- df_f_0707 %>% slice_sample(n = 100)
+df_sample_0708 <- df_f_0708 %>% slice_sample(n = 100)
+df_sample_0709 <- df_f_0709 %>% slice_sample(n = 100)
+df_sample_0710 <- df_f_0710 %>% slice_sample(n = 100)
+df_sample_0711 <- df_f_0711 %>% slice_sample(n = 100)
+df_sample_0712 <- df_f_0712 %>% slice_sample(n = 100)
+df_sample_0713 <- df_f_0713 %>% slice_sample(n = 100)
+df_sample_0714 <- df_f_0714 %>% slice_sample(n = 100)
+df_sample_0715 <- df_f_0715 %>% slice_sample(n = 100)
+df_sample_0716 <- df_f_0716 %>% slice_sample(n = 100)
+df_sample_0717 <- df_f_0717 %>% slice_sample(n = 100)
+df_sample_0718 <- df_f_0718 %>% slice_sample(n = 100)
+df_sample_0719 <- df_f_0719 %>% slice_sample(n = 100)
+df_sample_0720 <- df_f_0720 %>% slice_sample(n = 100)
+df_sample_0721 <- df_f_0721 %>% slice_sample(n = 100)
+df_sample_0722 <- df_f_0722 %>% slice_sample(n = 100)
+df_sample_0723 <- df_f_0723 %>% slice_sample(n = 100)
+
+df_sample <- bind_rows(df_sample_0704, df_sample_0705, df_sample_0706, df_sample_0707, df_sample_0708, df_sample_0709, df_sample_0710, df_sample_0711, df_sample_0712, df_sample_0713, df_sample_0714, df_sample_0715, df_sample_0716, df_sample_0717, df_sample_0718, df_sample_0719, df_sample_0720, df_sample_0721, df_sample_0722, df_sample_0723)
+
+df_sample <- df_sample %>%
+  filter(str_trim(cleanedText) != "")
+
+sample_tokens <- df_sample %>% unnest_tokens(term, cleanedText)
+sample_corpus <- Corpus(VectorSource(df_sample$cleanedText))
+sample_dtm <- DocumentTermMatrix(sample_corpus)
+
+# Compute coherence values
+compute_coherence_values <- function(sample_dtm, sample_tokens, k_min = 3, k_max = 20, step = 1, seed = 1234) {
+  k_list <- seq(k_min, k_max, by = step)
+  coherence_values <- c()
+  lda_models <- list()
+  
+  for (k in k_list) {
+    cat("Training LDA with", k, "topics...\n")
+    
+    lda_model <- LDA(sample_dtm, control = list(seed = 33), k = k)
+    lda_models[[as.character(k)]] <- lda_model
+    
+    diagnostics <- topic_diagnostics(lda_model, sample_dtm)
+    coherence <- mean(diagnostics$topic_coherence)
+    coherence_values <- c(coherence_values, coherence)
+    
+    }
+  return(list(models = lda_models, coherence = coherence_values, k = k_list))
+}
+
+result <- compute_coherence_values(sample_dtm, sample_tokens, k_min = 3, k_max = 20)
+save(result, file = "backups/result.rda")
+
+coherence_data <- data.frame(k = result$k, coherence = result$coherence)
+
+ggplot(coherence_data, aes(x = k, y = coherence)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Coherence vs. Number of Topics", x = "Number of Topics (k)", y = "Coherence Score") +
+  theme_minimal()
+
+## Decided 4 topics
+
+#### 0.05-0.95? ####
+term_freqs <- col_sums(dtm_all)
+
+df_term_freq <- as.data.frame(table(term_freqs))
+colnames(df_term_freq) <- c("frequency", "num_terms")
+df_term_freq$frequency <- as.numeric(df_term_freq$frequency)
+
+ggplot(df_term_freq, aes(x = frequency, y = num_terms)) +
+  geom_line(color = "tomato", linewidth = 1) +
+  labs(title = "Term Frequency Line Plot",
+       x = "Term Frequency",
+       y = "Number of Terms") +
+  xlim(0,55) +
+  theme_minimal()
+
+# Terms that appear more than 2 times and less than 50 times
+selected_terms <- names(term_freqs[term_freqs > 2 & term_freqs < quantile(term_freqs, 0.95)])
+dtm_filtered <- dtm_all[, selected_terms]
+
+# こんなに削ったら、topicが割り当てられないpostが出てきそう。
+
+
+#### Text Preprocessing for All Corpus ####
+
+df_f_all <- bind_rows(df_f_0704, df_f_0705, df_f_0706, df_f_0707, df_f_0708, df_f_0709, df_f_0710, df_f_0711, df_f_0712, df_f_0713, df_f_0714, df_f_0715, df_f_0716, df_f_0717, df_f_0718, df_f_0719, df_f_0720, df_f_0721, df_f_0722, df_f_0723)
+df_f_all <- df_f_all %>%
+  mutate(id = row_number())
+# 3164058
+
+df_f_all <- df_f_all %>% filter(str_trim(cleanedText) != "")
+# 3164058
+
+df_f_all <- subset(df_f_all, !(is.na(df_f_all$cleanedText)))
+# 3161348
+
+table(is.na(df_f_all$cleanedText))  # FALSE for all the doc
+
+# tokens <- df_f_all %>% unnest_tokens(term, cleanedText)
+corp_f_all <- corp_all[df_f_all$id]
+
+# dtm_all <- DocumentTermMatrix(corp_all)
+# save(dtm_all, file = "backups/dtm_all.rda")
+
+dtm_f_all <- DocumentTermMatrix(corp_f_all, control = list(wordLengths=c(1, Inf)))
+
+#### LDA & Dominant Topics ####
+LDA4 <- LDA(dtm_f_all, control = list(seed = 33), k = 4)
+save(LDA4, file = "backups/LDA4.rda")
+
+top_terms <- terms(LDA4, 20)
+top_terms
+
+dominant_topics <- get_topics(LDA4)
+dominant_topics
+
+dominant_topics_df <- as.data.frame(dominant_topics)
+gamma_df <- as.data.frame(LDA4@gamma)
+
+df_ff_all <- bind_cols(df_f_all, dominant_topics_df, gamma_df)
+df_ff_all <- df_ff_all %>% rename("topic1" = V1) %>% rename("topic2" = V2) %>% rename("topic3" = V3) %>% rename("topic4" = V4)
+
+save(df_ff_all, file = "backups/df_ff_all.rda")
+
+#### LDA EDA ####
+
+summary(df_ff_all$topic1)
+#  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.0912  0.2476  0.2500  0.2500  0.2525  0.5751
+
+summary(df_ff_all$topic2)
+#  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.1035  0.2474  0.2498  0.2500  0.2523  0.6408
+
+summary(df_ff_all$topic3)
+#  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.1159  0.2473  0.2498  0.2500  0.2523  0.6567
+
+summary(df_ff_all$topic4)
+#  Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+#  0.09588 0.24742 0.24975 0.25000 0.25228 0.68883
+
+dominant_topic_df <- as.data.frame(table(df_ff_all$dominant_topics))
+colnames(dominant_topic_df) <- c("Topic", "Count")
+
+ggplot(dominant_topic_df, aes(x = factor(Topic), y = Count, fill = factor(Topic))) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Document Count per Dominant Topic", x = "Topic", y = "Number of Documents") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+
+topic_by_date <- df_ff_all %>%
+  group_by(date, dominant_topics) %>%
+  summarise(count = n(), .groups = "drop")
+
+topic_by_date <- topic_by_date %>%
+  group_by(date) %>%
+  mutate(total_posts = sum(count), percentage = count / total_posts) %>%
+  ungroup()
+
+ggplot(topic_by_date, aes(x = date, y = percentage, color = factor(dominant_topics))) +
+  geom_line() +
+  labs(title = "Topic Trends Over Time (Percentage)", x = "Date", y = "Percentage of Posts", color = "Topic") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal()
+
