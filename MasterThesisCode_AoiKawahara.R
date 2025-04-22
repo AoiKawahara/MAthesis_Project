@@ -819,6 +819,8 @@ rm(corp_0723)
 
 
 
+#### EDA ####
+
 ################
 ##   3. LDA   ##
 ################
@@ -829,6 +831,8 @@ library(topicmodels)
 library(topicdoc)
 library(text2vec)
 library(Matrix)
+
+library(wordcloud)
 
 #### Coherence Values ####
 
@@ -961,6 +965,25 @@ save(df_ff_all, file = "backups/df_ff_all.rda")
 
 #### EDA ####
 
+word_counts <- slam::col_sums(dtm_f_all)
+top100_freq_df <- data.frame(term = names(word_counts), freq = word_counts) %>%
+  arrange(desc(freq)) %>%
+  slice_head(n = 100)
+
+wordcloud(words = top100_freq_df$term, freq = word_freq_df$freq,
+          min.freq = 1, max.words = 100,
+          random.order = FALSE)
+
+top30_freq_df <- word_freq_df %>%
+  slice_head(n = 30)
+
+ggplot(top30_freq_df, aes(x = reorder(term, freq), y = freq)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  coord_flip() +
+  labs(title = "Top 30 Word Frequency Distribution", x = "Words", y = "Frequency") +
+  theme_minimal()
+
+
 df_ff_all_n22 <- df_ff_all %>% filter(date != '2024-07-22')
 
 summary(df_ff_all$topic1)
@@ -1044,6 +1067,59 @@ ggplot(topic_likes, aes(x = date, y = mean_likes, color = factor(dominant_topics
 ##  4. Sentiment Analysis  ##
 #############################
 
+library(vader)
+library(wordcloud)
 
+#### Trial on Sample Data Frame ####
+
+# 1. Define the Aspects
+aspects <- list(Biden = c("biden", "joe", "democrats", "democrat"),
+                Trump = c("trump", "donald", "gop",  "maga", "rnc", "trumps", "blue", "conservative"),
+                Assassination = c("assassination", "attempt"))
+
+# 2. Define the ASBA function
+get_aspect_sentiment <- function(text) {
+  aspect_sentiments <- tibble(aspect = character(),
+                              compound = double(),
+                              pos = double(),
+                              neu = double(),
+                              neg = double(),
+                              words = list())
+  
+  for (aspect in names(aspects)) {
+    keywords <- aspects[[aspect]]
+    aspect_sentences <- text[grepl(paste(keywords, collapse = "|"), text, ignore.case = TRUE)]
+    
+    if (length(aspect_sentences) > 0) {
+      sentiment <- as.list(get_vader(paste(aspect_sentences, collapse = ". ")))
+      words_list <- list(strsplit(paste(aspect_sentences, collapse = " "), " ")[[1]])
+      
+      if (all(c("compound", "pos", "neu", "neg") %in% names(sentiment))) {
+        aspect_sentiments <- aspect_sentiments %>%
+          add_row(aspect = aspect,
+                  compound = as.numeric(sentiment$compound),
+                  pos = as.numeric(sentiment$pos),
+                  neu = as.numeric(sentiment$neu),
+                  neg = as.numeric(sentiment$neg),
+                  words = words_list)}}}
+  return(aspect_sentiments)}
+
+# 3. Apply the Function
+aspect_sentiments <- df_sample %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+
+# 4. Display results table
+aspect_summary <- aspect_sentiments %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+print(aspect_summary)
 
 
