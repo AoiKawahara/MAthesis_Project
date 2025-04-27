@@ -1111,6 +1111,8 @@ aspect_sentiments <- df_sample %>%
     get_aspect_sentiment(cleanedText)})) %>%
   unnest(aspect_sentiment)
 
+head(df_sample$cleanedText)
+
 # 4. Display results table
 aspect_summary <- aspect_sentiments %>%
   group_by(aspect) %>%
@@ -1120,6 +1122,324 @@ aspect_summary <- aspect_sentiments %>%
             avg_neg = mean(neg, na.rm = TRUE),
             count = n())
 
-print(aspect_summary)
+#### 0704 ####
+ABSA_0704 <- df_f_0704 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0704, file = "ABSA_0704.rda")
 
+ABSA_0704_summary <- ABSA_0704 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0705 ####
+ABSA_0705 <- df_f_0705 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0705, file = "ABSA_0705.rda")
+
+ABSA_0705_summary <- ABSA_0705 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0706 ####
+ABSA_0706 <- df_f_0706 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0706, file = "ABSA_0706.rda")
+
+ABSA_0706_summary <- ABSA_0706 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0707 ####
+ABSA_0707 <- df_f_0707 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0707, file = "ABSA_0707.rda")
+
+ABSA_0707_summary <- ABSA_0707 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0708 ####
+ABSA_0708 <- df_f_0708 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0708, file = "ABSA_0708.rda")
+beep()
+
+ABSA_0708_summary <- ABSA_0708 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0709 ####
+ABSA_0709 <- df_f_0709 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0709, file = "backups/ABSA_0709.rda")
+
+ABSA_0709_summary <- ABSA_0709 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0710 ####
+ABSA_0710 <- df_f_0710 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0710, file = "backups/ABSA_0710.rda")
+
+ABSA_0710_summary <- ABSA_0710 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0711 ####
+ABSA_0711 <- df_f_0711 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0711, file = "backups/ABSA_0711.rda")
+
+ABSA_0711_summary <- ABSA_0711 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0712 ####
+ABSA_0712 <- df_f_0712 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0712, file = "backups/ABSA_0712.rda")
+
+ABSA_0712_summary <- ABSA_0712 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0713 ####
+ABSA_0713 <- df_f_0713 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0713, file = "backups/ABSA_0713.rda")
+
+ABSA_0713_summary <- ABSA_0713 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0714 ####
+ABSA_0714 <- df_f_0714 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0714, file = "backups/ABSA_0714.rda")
+
+ABSA_0714_summary <- ABSA_0714 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0715 ####
+ABSA_0715 <- df_f_0715 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0715, file = "backups/ABSA_0715.rda")
+
+ABSA_0715_summary <- ABSA_0715 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0716 ####
+ABSA_0716 <- df_f_0716 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0716, file = "backups/ABSA_0716.rda")
+
+ABSA_0716_summary <- ABSA_0716 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0717 ####
+ABSA_0717 <- df_f_0717 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0717, file = "backups/ABSA_0717.rda")
+
+ABSA_0717_summary <- ABSA_0717 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0718 ####
+ABSA_0718 <- df_f_0718 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0718, file = "backups/ABSA_0718.rda")
+
+ABSA_0718_summary <- ABSA_0718 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0719 ####
+ABSA_0719 <- df_f_0719 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0719, file = "backups/ABSA_0719.rda")
+
+ABSA_0719_summary <- ABSA_0719 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0720 ####
+ABSA_0720 <- df_f_0720 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0720, file = "backups/ABSA_0720.rda")
+
+ABSA_0720_summary <- ABSA_0720 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0721 ####
+ABSA_0721 <- df_f_0721 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0721, file = "backups/ABSA_0721.rda")
+
+ABSA_0721_summary <- ABSA_0721 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0721 ####
+ABSA_0722 <- df_f_0722 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0722, file = "backups/ABSA_0722.rda")
+
+ABSA_0722_summary <- ABSA_0722 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
+
+#### 0723 ####
+ABSA_0723 <- df_f_0723 %>%
+  rowwise() %>%
+  mutate(aspect_sentiment = list({cat("Processing row:", cur_group_id(), "\n")
+    get_aspect_sentiment(cleanedText)})) %>%
+  unnest(aspect_sentiment)
+save(ABSA_0723, file = "backups/ABSA_0723.rda")
+
+ABSA_0723_summary <- ABSA_0723 %>%
+  group_by(aspect) %>%
+  summarise(avg_compound = mean(compound, na.rm = TRUE),
+            avg_pos = mean(pos, na.rm = TRUE),
+            avg_neu = mean(neu, na.rm = TRUE),
+            avg_neg = mean(neg, na.rm = TRUE),
+            count = n())
 
