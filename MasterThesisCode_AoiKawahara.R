@@ -580,6 +580,7 @@ setnames(df_f_0723, "cleaned_0723", "cleanedText")
 
 
 
+
 #############################
 ##  2. Text Preprocessing  ##
 #############################
@@ -821,6 +822,7 @@ rm(corp_0723)
 
 #### EDA ####
 
+
 ################
 ##   3. LDA   ##
 ################
@@ -950,7 +952,7 @@ LDA4 <- LDA(dtm_f_all, control = list(seed = 33), k = 4)
 save(LDA4, file = "backups/LDA4.rda")
 
 top_terms <- terms(LDA4, 20)
-top_terms
+top_terms$
 
 dominant_topics <- get_topics(LDA4)
 dominant_topics
@@ -1034,7 +1036,8 @@ ggplot(topic_by_date, aes(x = date, y = percentage, color = factor(dominant_topi
   geom_line() +
   labs(title = "Topic Trends Over Time (Percentage)", x = "Date", y = "Percentage of Posts", color = "Topic") +
   scale_x_date(date_breaks = "1 day", date_labels = "%d") +
-  theme_minimal()
+  theme_minimal() +
+  theme(legend.position = "bottom")
 
 # Linear Specification
 # lm_topic1 <- lm(percentage ~ date, data = topic_by_date)
@@ -1061,6 +1064,54 @@ ggplot(topic_likes, aes(x = date, y = mean_likes, color = factor(dominant_topics
   geom_line() +
   labs(title = "Averages Likes per Topic Over Time", x = "Date", y = "Average Like Counts", color = "Topic") +
   theme_minimal()
+
+#### Topic vs Engagement ####
+df_ff_all$logLikeCount <- log(as.numeric(df_ff_all$likeCount) + 1)
+
+ggplot(df_ff_all, aes(x = factor(dominant_topics), y = log(as.numeric(likeCount) + 1))) +
+  geom_boxplot(fill = "skyblue") +
+  labs(title = "Distribution of Like Counts by Dominant Topic", x = "Dominant Topic", y = "Like Count") +
+  theme_minimal()
+
+df_ff_all <- df_ff_all %>%
+  mutate(like_category = case_when(
+    as.numeric(likeCount) == 0 ~ "0",
+    as.numeric(likeCount) <= 10 ~ "1-10",
+    as.numeric(likeCount) <= 100 ~ "11-100",
+    as.numeric(likeCount) <= 1000 ~ "101-1000",
+    TRUE ~ "1000+"))
+df_ff_all$like_category <- factor(df_ff_all$like_category, levels = c("0", "1-10", "11-100", "101-1000", "1000+"))
+
+table(df_ff_all$like_category)
+# 0     1-10    1000+ 101-1000   11-100 
+# 1737914  1056017    29476    88476   249465
+
+ggplot(df_ff_all, aes(x = factor(dominant_topics), fill = like_category)) +
+  geom_bar(position = "fill") +
+  labs(title = "Proportion of Like Counts by Topic", x = "Dominant Topic", y = "Proportion", fill = "Like Category") +
+  theme_minimal()
+
+df_topic_likes <- df_ff_all_n22 %>%
+  group_by(date, dominant_topics) %>%
+  summarise(mean_likes = mean(as.numeric(likeCount))) %>%
+  ungroup()
+
+ggplot(df_topic_likes, aes(x = date, y = mean_likes, color = factor(dominant_topics))) +
+  geom_line() +
+  labs(title = "Mean Like Count by Topic over Time", x = "Date", y = "Mean Likes", color = "Dominant Topic") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+  
+df_ff_all_T1 <- df_ff_all %>%
+  filter(dominant_topics == 1)
+
+ggplot(df_ff_all_T1, aes(x = date, fill = like_category)) +
+  geom_bar(position = "fill") +
+  labs(title = "Boxplot of Like Count (log scale) for Topic 1 by Date", x = "Date", y = "Log(Like Count + 1)") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal()
+
 
 
 #############################
@@ -1443,3 +1494,172 @@ ABSA_0723_summary <- ABSA_0723 %>%
             avg_neg = mean(neg, na.rm = TRUE),
             count = n())
 
+
+#### ABSA summary organized by Aspects ####
+dates <- sprintf("070%s", 4:9)
+dates <- c(dates, sprintf("071%s", 0:9))
+dates <- c(dates, "0720", "0721", "0723")
+
+ABSA_Assassination_Summary <- purrr::map_dfr(
+  dates,
+  function(d) {
+    df_name <- paste0("ABSA_", d, "_summary")
+    df <- get(df_name)
+    df <- df[df$aspect == "Assassination", ]
+    df$date <- as.Date(paste0("2024-", substr(d, 1, 2), "-", substr(d, 3, 4)))
+    return(df)})
+
+ABSA_Trump_Summary <- purrr::map_dfr(
+  dates,
+  function(d) {
+    df_name <- paste0("ABSA_", d, "_summary")
+    df <- get(df_name)
+    df <- df[df$aspect == "Trump", ]
+    df$date <- as.Date(paste0("2024-", substr(d, 1, 2), "-", substr(d, 3, 4)))
+    return(df)})
+
+ABSA_Biden_Summary <- purrr::map_dfr(
+  dates,
+  function(d) {
+    df_name <- paste0("ABSA_", d, "_summary")
+    df <- get(df_name)
+    df <- df[df$aspect == "Biden", ]
+    df$date <- as.Date(paste0("2024-", substr(d, 1, 2), "-", substr(d, 3, 4)))
+    return(df)})
+
+#### EDA ####
+
+ggplot(ABSA_Assassination_Summary, aes(x = date)) +
+  geom_line(aes(y = avg_compound, color = "Compound sentiment score")) +
+  geom_line(aes(y = avg_pos, color = "Average positive score")) +
+  geom_line(aes(y = avg_neg, color = "Average negative score")) +
+  scale_color_manual(values = c("Compound sentiment score" = "black", "Average positive score" = "forestgreen", "Average negative score" = "firebrick")) +
+  labs(title = "Trend line of Sentiments related to Assassination", x = "Date", y = "Scores", color = "Sentiment Type") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+ggplot(ABSA_Trump_Summary, aes(x = date)) +
+  geom_line(aes(y = avg_compound, color = "Compound sentiment score")) +
+  geom_line(aes(y = avg_pos, color = "Average positive score")) +
+  geom_line(aes(y = avg_neg, color = "Average negative score")) +
+  scale_color_manual(values = c("Compound sentiment score" = "black", "Average positive score" = "forestgreen", "Average negative score" = "firebrick")) +
+  labs(title = "Trend line of Sentiments related to Trump", x = "Date", y = "Scores", color = "Sentiment Type") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+ggplot(ABSA_Biden_Summary, aes(x = date)) +
+  geom_line(aes(y = avg_compound, color = "Compound sentiment score")) +
+  geom_line(aes(y = avg_pos, color = "Average positive score")) +
+  geom_line(aes(y = avg_neg, color = "Average negative score")) +
+  scale_color_manual(values = c("Compound sentiment score" = "black", "Average positive score" = "forestgreen", "Average negative score" = "firebrick")) +
+  labs(title = "Trend line of Sentiments related to Biden", x = "Date", y = "Scores", color = "Sentiment Type") +
+  scale_x_date(date_breaks = "1 day", date_labels = "%d") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+top_neg_trump <- ABSA_neg %>%
+  filter(aspect == "Trump") %>%
+  filter(date >= as.Date("2024-07-15")) %>%
+  arrange(desc(neg)) %>%
+  select(neg, text)
+
+top_pos_trump <- ABSA_pos %>%
+  filter(aspect == "Trump") %>%
+  filter(date >= as.Date("2024-07-15")) %>%
+  arrange(desc(pos)) %>%
+  select(pos, text)
+
+top_neg_assassination <- ABSA_neg %>%
+  filter(aspect == "Assassination") %>%
+  arrange(desc(neg)) %>%
+  select(neg, text)
+
+#### Sentiment vs Engagement ####
+ABSA_all <- bind_rows(ABSA_0704, ABSA_0705, ABSA_0706, ABSA_0707, ABSA_0708, ABSA_0709, ABSA_0710, ABSA_0711, ABSA_0712, ABSA_0713, ABSA_0714, ABSA_0715, ABSA_0716, ABSA_0717, ABSA_0718, ABSA_0719, ABSA_0720, ABSA_0721, ABSA_0722, ABSA_0723)
+
+ABSA_pos <- ABSA_all %>%
+  filter(compound > 0)　%>%
+  select(text, likeCount, retweetCount, likeCount, aspect, compound, pos, neg, neu, date) %>%
+  mutate(logLikeCount = log(as.numeric(likeCount) + 1))
+
+ABSA_neg <- ABSA_all %>%
+  filter(compound < 0)　%>%
+  select(text, likeCount, retweetCount, likeCount, aspect,compound, pos, neg, neu, date) %>%
+  mutate(logLikeCount = log(as.numeric(likeCount) + 1))
+
+ggplot(ABSA_pos, aes(x = logLikeCount, y = compound)) +
+  geom_point(size = 0.1) +
+  labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+
+ggplot(ABSA_neg, aes(x = logLikeCount, y = compound)) +
+  geom_point(size = 0.1) +
+  labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+
+###########################################
+##  5. Interrupted Time Series Analysis  ##
+###########################################
+
+library(nlme)
+library(AICcmodavg)
+
+#### ITS on Trump ####
+
+ITS_Trump <- ABSA_Trump_Summary %>%
+  select(avg_compound, date) %>%
+  mutate(intervention = if_else(date >= as.Date("2024-07-13"), 1, 0),
+         post.intervention.time = if_else(intervention == 1, cumsum(intervention), 0),
+         time = row_number())
+
+model_T1 = gls(avg_compound ~ time + intervention + post.intervention.time, data = ITS_Trump, method = "ML")
+summary(model_T1)
+
+ITS_Trump <- ITS_Trump %>%
+  mutate(model_T1.predictions = predictSE.gls (model_T1, ITS_Trump, se.fit = T)$fit,
+         model_T1.se = predictSE.gls (model_T1, ITS_Trump, se.fit = T)$se)
+
+ggplot(ITS_Trump, aes(x = time, y = avg_compound)) +
+  geom_ribbon(aes(ymin = model_T1.predictions - (1.96 * model_T1.se), ymax = model_T1.predictions + (1.96 * model_T1.se)), fill = "lightgreen") +
+  geom_line(aes(time, model_T1.predictions), color="black", lty=1) +
+  geom_point(alpha = 0.3)
+
+
+#### ITS on Biden ####
+ITS_Biden <- ABSA_Biden_Summary %>%
+  select(avg_compound, date) %>%
+  mutate(intervention = if_else(date >= as.Date("2024-07-13"), 1, 0),
+         post.intervention.time = if_else(intervention == 1, cumsum(intervention), 0),
+         time = row_number())
+
+model_B1 = gls(avg_compound ~ time + intervention + post.intervention.time, data = ITS_Biden, method = "ML")
+summary(model_B1)
+
+ITS_Biden <- ITS_Biden %>%
+  mutate(model_B1.predictions = predictSE.gls (model_B1, ITS_Biden, se.fit = T)$fit,
+         model_B1.se = predictSE.gls (model_B1, ITS_Biden, se.fit = T)$se)
+
+ggplot(ITS_Biden, aes(x = time, y = avg_compound)) +
+  geom_ribbon(aes(ymin = model_B1.predictions - (1.96 * model_B1.se), ymax = model_B1.predictions + (1.96 * model_B1.se)), fill = "lightgreen") +
+  geom_line(aes(time, model_B1.predictions), color="black", lty=1) +
+  geom_point(alpha = 0.3)
+
+
+#### ITS on Assassination ####
+ITS_Assassination <- ABSA_Assassination_Summary %>%
+  select(avg_compound, date) %>%
+  mutate(intervention = if_else(date >= as.Date("2024-07-13"), 1, 0),
+         post.intervention.time = if_else(intervention == 1, cumsum(intervention), 0),
+         time = row_number())
+
+model_A1 = gls(avg_compound ~ time + intervention + post.intervention.time, data = ITS_Assassination, method = "ML")
+summary(model_A1)
+
+ITS_Assassination <- ITS_Assassination %>%
+  mutate(model_A1.predictions = predictSE.gls (model_A1, ITS_Assassination, se.fit = T)$fit,
+         model_A1.se = predictSE.gls (model_A1, ITS_Assassination, se.fit = T)$se)
+
+ggplot(ITS_Assassination, aes(x = time, y = avg_compound)) +
+  geom_ribbon(aes(ymin = model_A1.predictions - (1.96 * model_A1.se), ymax = model_A1.predictions + (1.96 * model_A1.se)), fill = "lightgreen") +
+  geom_line(aes(time, model_A1.predictions), color="black", lty=1) +
+  geom_point(alpha = 0.3)
