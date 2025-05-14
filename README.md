@@ -29,9 +29,9 @@ Under construction.
 ## 📚 Related Work
 
 Several studies have explored the impact of Trump's assassination attempt on public opinion, including:
-- Zeng et al. (2025): Sympathy over Polarization: A Computational Discourse Analysis of Social Media Posts about the July 2024 Trump Assassination Attempt.
-- Holliday, Lelkes, & Westwood (2024): The July 2024 Trump assassination attempt was followed by lower in-group support for partisan violence and increased group unity.
-- Mustaqim & Haroni (2024): From a Victim to a Hero: A Visual Rhetoric of Donald Trump’s Attempted Assassination.
+- **Zeng et al. (2025)**: Sympathy over Polarization: A Computational Discourse Analysis of Social Media Posts about the July 2024 Trump Assassination Attempt.
+- **Holliday, Lelkes, & Westwood (2024)**: The July 2024 Trump assassination attempt was followed by lower in-group support for partisan violence and increased group unity.
+- **Mustaqim & Haroni (2024)**: From a Victim to a Hero: A Visual Rhetoric of Donald Trump’s Attempted Assassination.
 
 These studies provide my study a foundation for understanding the mixed interpretation of the effect of Trump's assassination attempt on public opinion.
 
