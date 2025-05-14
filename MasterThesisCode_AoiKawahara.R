@@ -1065,6 +1065,13 @@ ggplot(topic_likes, aes(x = date, y = mean_likes, color = factor(dominant_topics
   labs(title = "Averages Likes per Topic Over Time", x = "Date", y = "Average Like Counts", color = "Topic") +
   theme_minimal()
 
+df_ff_all_T1 <- df_ff_all %>% filter(dominant_topics == "1")
+df_ff_all_T2 <- df_ff_all %>% filter(dominant_topics == "2")
+df_ff_all_T3 <- df_ff_all %>% filter(dominant_topics == "3") %>%
+  filter(str_detect(text, regex("election", ignore_case = TRUE)))
+df_ff_all_T4 <- df_ff_all %>% filter(dominant_topics == "4") %>%
+  filter(str_detect(text, regex("tears|joy|assassination|media", ignore_case = TRUE)))
+
 #### Topic vs Engagement ####
 df_ff_all$logLikeCount <- log(as.numeric(df_ff_all$likeCount) + 1)
 
@@ -1111,6 +1118,7 @@ ggplot(df_ff_all_T1, aes(x = date, fill = like_category)) +
   labs(title = "Boxplot of Like Count (log scale) for Topic 1 by Date", x = "Date", y = "Log(Like Count + 1)") +
   scale_x_date(date_breaks = "1 day", date_labels = "%d") +
   theme_minimal()
+
 
 
 
@@ -1589,13 +1597,28 @@ ABSA_neg <- ABSA_all %>%
   select(text, likeCount, retweetCount, likeCount, aspect,compound, pos, neg, neu, date) %>%
   mutate(logLikeCount = log(as.numeric(likeCount) + 1))
 
-ggplot(ABSA_pos, aes(x = logLikeCount, y = compound)) +
-  geom_point(size = 0.1) +
-  labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+cor_pos <- cor(ABSA_pos$logLikeCount, ABSA_pos$pos, method = "pearson")
+cor_pos
 
-ggplot(ABSA_neg, aes(x = logLikeCount, y = compound)) +
-  geom_point(size = 0.1) +
-  labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+model_pos <- lm(likeCount ~ pos, data = ABSA_pos)
+summary(model_pos)
+
+model_pos_com <- lm(likeCount ~ compound, data = ABSA_pos)
+summary(model_pos_com)
+
+model_neg_com <- lm(likeCount ~ compound, data = ABSA_neg)
+summary(model_neg_com)
+
+# ggplot(ABSA_pos, aes(x = logLikeCount, y = compound)) +
+#   geom_point(size = 0.1) +
+#   labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+
+# ggplot(ABSA_neg, aes(x = logLikeCount, y = compound)) +
+#   geom_point(size = 0.1) +
+#   labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
+
+
+
 
 ###########################################
 ##  5. Interrupted Time Series Analysis  ##
@@ -1663,3 +1686,31 @@ ggplot(ITS_Assassination, aes(x = time, y = avg_compound)) +
   geom_ribbon(aes(ymin = model_A1.predictions - (1.96 * model_A1.se), ymax = model_A1.predictions + (1.96 * model_A1.se)), fill = "lightgreen") +
   geom_line(aes(time, model_A1.predictions), color="black", lty=1) +
   geom_point(alpha = 0.3)
+
+
+
+###########################################
+##  6. Sentiment vs Topic vs Engagement  ##
+###########################################
+
+df_ff_all_dom <- df_ff_all %>% select(text, dominant_topics)
+
+df_sent_topic <- ABSA_all %>%
+  select(text, replyCount, retweetCount, likeCount, date, cleanedText, compound) %>%
+  left_join(df_ff_all_dom, by = "text") %>%
+  distinct()
+
+model_sent_topic <- lm(likeCount ~ compound + as.factor(dominant_topics), data = df_sent_topic)
+summary(model_sent_topic)
+
+df_sent_topic_pos <- df_sent_topic %>% filter(compound > 0)
+df_sent_topic_neg <- df_sent_topic %>% filter(compound < 0)
+
+model_sent_topic_pos <- lm(likeCount ~ compound + as.factor(dominant_topics), data = df_sent_topic_pos)
+summary(model_sent_topic_pos)
+
+model_sent_topic_neg <- lm(likeCount ~ compound + as.factor(dominant_topics), data = df_sent_topic_neg)
+summary(model_sent_topic_neg)
+
+
+
