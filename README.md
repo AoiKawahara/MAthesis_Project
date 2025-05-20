@@ -1,4 +1,4 @@
-# Do Assassination Attempts Shape Public Sentiment? A Study of Donald Trump’s Attempted Assassination Using X Data.
+# Do Violences toward Politicians Shape Public Perception? A Computational Study on X Data in the Context of Donald Trump’s Attempted Assassination
 ![Thesis](https://img.shields.io/badge/Thesis-Ongoing-brightgreen)
 ![Software](https://img.shields.io/badge/R-blue)
 ![NLP](https://img.shields.io/badge/NLP-Sentiment%20Analysis-yellowgreen)
