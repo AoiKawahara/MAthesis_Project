@@ -16,35 +16,30 @@ df_list1 <- lapply(1:20, function(i) {
   fread(paste0("data/part_1/may_july_chunk_", i, ".csv.gz"))})
 names(df_list1) <- paste0("df", 1:20)
 lapply(df_list1, function(df) table(df$date))  # No data during the aimed period
-rm(df_list1)
 
 #### List 2 ####
 df_list2 <- lapply(21:40, function(i) {
   fread(paste0("data/part_2/may_july_chunk_", i, ".csv.gz"))})
 names(df_list2) <- paste0("df", 21:40)
 lapply(df_list2, function(df) table(df$date))  # No data during the aimed period
-rm(df_list2)
 
 #### List 3 ####
 df_list3 <- lapply(41:60, function(i) {
   fread(paste0("data/part_3/may_july_chunk_", i, ".csv.gz"))})
 names(df_list3) <- paste0("df", 41:60)
 lapply(df_list3, function(df) table(df$date))
-rm(df_list3)
 
 #### List 4 ####
 df_list4 <- lapply(61:80, function(i) {
   fread(paste0("data/part_4/may_july_chunk_", i, ".csv.gz"))})
 names(df_list4) <- paste0("df", 61:80)
 lapply(df_list4, function(df) table(df$date))  # No data during the aimed period
-rm(df_list4)
 
 #### List 5 ####
 df_list5 <- lapply(81:100, function(i) {
   fread(paste0("data/part_5/may_july_chunk_", i, ".csv.gz"))})
 names(df_list5) <- paste0("df", 81:100)
 lapply(df_list5, function(df) table(df$date))
-rm(df_list5)
 
 #### List 6 ####
 df_list6 <- lapply(101:120, function(i) {
@@ -57,7 +52,6 @@ df_selected6 <- lapply(df_list6, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected6 <- Filter(Negate(is.null), df_selected6)
-rm(df_list6)
 
 df_cleaned6 <- lapply(df_selected6, function(df) {
   filtered_df <- df %>%
@@ -67,10 +61,8 @@ df_cleaned6 <- lapply(df_selected6, function(df) {
 head(df_cleaned6$df108$text)
 head(df_cleaned6$df108$rawContent)
 save(df_cleaned6, file = "df_cleaned6.rda")
-rm(df_selected6)
 
 df_all6 <- do.call(rbind, df_cleaned6)
-rm(df_cleaned6)
 
 #### List 7 ####
 df_list7 <- lapply(121:140, function(i) {
@@ -83,18 +75,14 @@ df_selected7 <- lapply(df_list7, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected7 <- Filter(Negate(is.null), df_selected7)
-rm(df_list7)
 
 df_cleaned7 <- lapply(df_selected7, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned7, file = "df_cleaned7.rda")
-rm(df_selected7)
 
 df_all7 <- do.call(rbind, df_cleaned7)
-rm(df_cleaned7)
 
 #### List 8 ####
 df_list8 <- lapply(141:160, function(i) {
@@ -107,18 +95,14 @@ df_selected8 <- lapply(df_list8, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected8 <- Filter(Negate(is.null), df_selected8)
-rm(df_list8)
 
 df_cleaned8 <- lapply(df_selected8, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned8, file = "df_cleaned8.rda")
-rm(df_selected8)
 
 df_all8 <- do.call(rbind, df_cleaned8)
-rm(df_cleaned8)
 
 #### List 9 ####
 df_list9 <- lapply(161:180, function(i) {
@@ -131,18 +115,14 @@ df_selected9 <- lapply(df_list9, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected9 <- Filter(Negate(is.null), df_selected9)
-rm(df_list9)
 
 df_cleaned9 <- lapply(df_selected9, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned9, file = "df_cleaned9.rda")
-rm(df_selected9)
 
 df_all9 <- do.call(rbind, df_cleaned9)
-rm(df_cleaned9)
 
 #### List 10 ####
 df_list10 <- lapply(181:200, function(i) {
@@ -155,18 +135,14 @@ df_selected10 <- lapply(df_list10, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected10 <- Filter(Negate(is.null), df_selected10)
-rm(df_list10)
 
 df_cleaned10 <- lapply(df_selected10, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned10, file = "df_cleaned10.rda")
-rm(df_selected10)
 
 df_all10 <- do.call(rbind, df_cleaned10)
-rm(df_cleaned10)
 
 #### List 11 ####
 df_list11 <- lapply(201:220, function(i) {
@@ -179,18 +155,14 @@ df_selected11 <- lapply(df_list11, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected11 <- Filter(Negate(is.null), df_selected11)
-rm(df_list11)
 
 df_cleaned11 <- lapply(df_selected11, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned11, file = "df_cleaned11.rda")
-rm(df_selected11)
 
 df_all11 <- do.call(rbind, df_cleaned11)
-rm(df_cleaned11)
 
 #### List 12 ####
 df_list12 <- lapply(221:240, function(i) {
@@ -203,18 +175,14 @@ df_selected12 <- lapply(df_list12, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected12 <- Filter(Negate(is.null), df_selected12)
-rm(df_list12)
 
 df_cleaned12 <- lapply(df_selected12, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned12, file = "df_cleaned12.rda")
-rm(df_selected12)
 
 df_all12 <- do.call(rbind, df_cleaned12)
-rm(df_cleaned12)
 
 #### List 13 ####
 df_list13 <- lapply(241:260, function(i) {
@@ -227,18 +195,14 @@ df_selected13 <- lapply(df_list13, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected13 <- Filter(Negate(is.null), df_selected13)
-rm(df_list13)
 
 df_cleaned13 <- lapply(df_selected13, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned13, file = "df_cleaned13.rda")
-rm(df_selected13)
 
 df_all13 <- do.call(rbind, df_cleaned13)
-rm(df_cleaned13)
 
 #### List 14 ####
 df_list14 <- lapply(261:280, function(i) {
@@ -251,18 +215,14 @@ df_selected14 <- lapply(df_list14, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected14 <- Filter(Negate(is.null), df_selected14)
-rm(df_list14)
 
 df_cleaned14 <- lapply(df_selected14, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned14, file = "df_cleaned14.rda")
-rm(df_selected14)
 
 df_all14 <- do.call(rbind, df_cleaned14)
-rm(df_cleaned14)
 
 #### List 15 ####
 df_list15 <- lapply(281:300, function(i) {
@@ -275,18 +235,14 @@ df_selected15 <- lapply(df_list15, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected15 <- Filter(Negate(is.null), df_selected15)
-rm(df_list15)
 
 df_cleaned15 <- lapply(df_selected15, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned15, file = "df_cleaned15.rda")
-rm(df_selected15)
 
 df_all15 <- do.call(rbind, df_cleaned15)
-rm(df_cleaned15)
 
 #### List 16 ####
 df_list16 <- lapply(301:320, function(i) {
@@ -299,18 +255,14 @@ df_selected16 <- lapply(df_list16, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected16 <- Filter(Negate(is.null), df_selected16)
-rm(df_list16)
 
 df_cleaned16 <- lapply(df_selected16, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned16, file = "df_cleaned16.rda")
-rm(df_selected16)
 
 df_all16 <- do.call(rbind, df_cleaned16)
-rm(df_cleaned16)
 
 #### List 17 ####
 df_list17 <- lapply(321:340, function(i) {
@@ -323,18 +275,14 @@ df_selected17 <- lapply(df_list17, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected17 <- Filter(Negate(is.null), df_selected17)
-rm(df_list17)
 
 df_cleaned17 <- lapply(df_selected17, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned17, file = "df_cleaned17.rda")
-rm(df_selected17)
 
 df_all17 <- do.call(rbind, df_cleaned17)
-rm(df_cleaned17)
 
 #### List 18 ####
 df_list18 <- lapply(341:360, function(i) {
@@ -347,18 +295,14 @@ df_selected18 <- lapply(df_list18, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected18 <- Filter(Negate(is.null), df_selected18)
-rm(df_list18)
 
 df_cleaned18 <- lapply(df_selected18, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned18, file = "df_cleaned18.rda")
-rm(df_selected18)
 
 df_all18 <- do.call(rbind, df_cleaned18)
-rm(df_cleaned18)
 
 #### List 19 ####
 df_list19 <- lapply(361:380, function(i) {
@@ -371,25 +315,20 @@ df_selected19 <- lapply(df_list19, function(df) {
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
 df_selected19 <- Filter(Negate(is.null), df_selected19)
-rm(df_list19)
 
 df_cleaned19 <- lapply(df_selected19, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned19, file = "df_cleaned19.rda")
-rm(df_selected19)
 
 df_all19 <- do.call(rbind, df_cleaned19)
-rm(df_cleaned19)
 
 #### List 20 ####
 df_list20 <- lapply(381:400, function(i) {
   fread(paste0("data/part_20/may_july_chunk_", i, ".csv.gz"))})
 names(df_list20) <- paste0("df", 381:400)
 lapply(df_list20, function(df) table(df$date))  # No data during the aimed period
-rm(df_list20)
 
 #### List 21 ####
 df_list21 <- lapply(401:420, function(i) {
@@ -401,9 +340,6 @@ df_selected21 <- lapply(df_list21, function(df) {
   filtered_df <- df[df$date >= "2024-07-04" & df$date <= "2024-07-31", ]
   if (nrow(filtered_df) > 0) {
     return(filtered_df)}})
-
-rm(df_list21)
-rm(df_selected21)
 
 #### List 22 ####
 df_list22 <- lapply(421:440, function(i) {
@@ -417,39 +353,19 @@ df_selected22 <- lapply(df_list22, function(df) {
     return(filtered_df)}})
 
 df_selected22 <- Filter(Negate(is.null), df_selected22)
-rm(df_list22)
 
 df_cleaned22 <- lapply(df_selected22, function(df) {
   filtered_df <- df %>%
     subset(lang == 'en') %>%
     subset(select = c(text, replyCount, retweetCount, likeCount, quoteCount, date, rawContent))})
-
 save(df_cleaned22, file = "df_cleaned22.rda")
-rm(df_selected22)
 
 df_all22 <- do.call(rbind, df_cleaned22)
-rm(df_cleaned22)
-
 
 #### Organize data according to date ####
 
 df_alls <- list(df_all6, df_all7, df_all8, df_all9, df_all10, df_all11, df_all12, df_all13, df_all14, df_all15, df_all16, df_all17, df_all18, df_all19, df_all22)
-
-rm(df_all6)
-rm(df_all7)
-rm(df_all8)
-rm(df_all9)
-rm(df_all10)
-rm(df_all11)
-rm(df_all12)
-rm(df_all13)
-rm(df_all14)
-rm(df_all15)
-rm(df_all16)
-rm(df_all17)
-rm(df_all18)
-rm(df_all19)
-rm(df_all22)
+save(df_alls, file = "df_alls.rda")
 
 df_0704 <- do.call(rbind, lapply(df_alls, function(df) df[df$date == "2024-07-04", ]))
 df_0705 <- do.call(rbind, lapply(df_alls, function(df) df[df$date == "2024-07-05", ]))
@@ -480,9 +396,6 @@ df_0729 <- do.call(rbind, lapply(df_alls, function(df) df[df$date == "2024-07-29
 df_0730 <- do.call(rbind, lapply(df_alls, function(df) df[df$date == "2024-07-30", ]))
 df_0731 <- do.call(rbind, lapply(df_alls, function(df) df[df$date == "2024-07-31", ]))
 
-save(df_alls, file = "df_alls.rda")
-rm(df_alls)
-
 df_date_tables <- list(date = c("2024-07-04", "2024-07-05", "2024-07-06", "2024-07-07", "2024-07-08", "2024-07-09", "2024-07-10", "2024-07-11", "2024-07-12", "2024-07-13", "2024-07-14", "2024-07-15", "2024-07-16", "2024-07-17", "2024-07-18", "2024-07-19", "2024-07-20", "2024-07-21", "2024-07-22", "2024-07-23"),
                        nums = c(nrow(df_0704), nrow(df_0705), nrow(df_0706), nrow(df_0707), nrow(df_0708), nrow(df_0709), nrow(df_0710), nrow(df_0711), nrow(df_0712), nrow(df_0713), nrow(df_0714), nrow(df_0715), nrow(df_0716), nrow(df_0717), nrow(df_0718), nrow(df_0719), nrow(df_0720), nrow(df_0721), nrow(df_0722), nrow(df_0723)))
 
@@ -496,8 +409,6 @@ ggplot(df_date_tables, aes(x = date, y = nums, group = 1)) +
   geom_line() +
   labs(title = "Number of Posts by Date") +
   theme(axis.text.x = element_text(angle = 90))
-
-
 
 #### Remove repliy posts ####
 
@@ -534,30 +445,6 @@ ggplot(df_f_date_tables, aes(x = date, y = nums, group = 1)) +
   scale_y_continuous(labels = comma) +
   theme(axis.text.x = element_text(angle = 90))
 
-
-#### Load Data Set ####
-
-load("backups/df_f_0704.rda")
-load("backups/df_f_0705.rda")
-load("backups/df_f_0706.rda")
-load("backups/df_f_0707.rda")
-load("backups/df_f_0708.rda")
-load("backups/df_f_0709.rda")
-load("backups/df_f_0710.rda")
-load("backups/df_f_0711.rda")
-load("backups/df_f_0712.rda")
-load("backups/df_f_0713.rda")
-load("backups/df_f_0714.rda")
-load("backups/df_f_0715.rda")
-load("backups/df_f_0716.rda")
-load("backups/df_f_0717.rda")
-load("backups/df_f_0718.rda")
-load("backups/df_f_0719.rda")
-load("backups/df_f_0720.rda")
-load("backups/df_f_0721.rda")
-load("backups/df_f_0722.rda")
-load("backups/df_f_0723.rda")
-
 setnames(df_f_0705, "cleaned_0705", "cleanedText")
 setnames(df_f_0706, "cleaned_0706", "cleanedText")
 setnames(df_f_0707, "cleaned_0707", "cleanedText")
@@ -577,9 +464,6 @@ setnames(df_f_0720, "cleaned_0720", "cleanedText")
 setnames(df_f_0721, "cleaned_0721", "cleanedText")
 setnames(df_f_0722, "cleaned_0722", "cleanedText")
 setnames(df_f_0723, "cleaned_0723", "cleanedText")
-
-
-
 
 #############################
 ##  2. Text Preprocessing  ##
@@ -664,9 +548,8 @@ corp_all <- c(corp_0704, corp_0705, corp_0706, corp_0707, corp_0708, corp_0709,
               corp_0722, corp_0723)
 
 save(corp_all, file = "backups/corp_all.rda")
-rm(corp_all)
 
-#### Add clean texts to data frame ####
+#### Add clean texts to data frame z####
 cleaned_0704 <- lapply(corp_0704, function(doc) doc$content)
 df_f_0704$cleanedText <- cleaned_0704
 
@@ -755,27 +638,6 @@ save(df_qdap_0721, file = "backups/df_qdap_0721.rda")
 save(df_qdap_0722, file = "backups/df_qdap_0722.rda")
 save(df_qdap_0723, file = "backups/df_qdap_0723.rda")
 
-rm(df_qdap_0704)
-rm(df_qdap_0705)
-rm(df_qdap_0706)
-rm(df_qdap_0707)
-rm(df_qdap_0708)
-rm(df_qdap_0709)
-rm(df_qdap_0710)
-rm(df_qdap_0711)
-rm(df_qdap_0712)
-rm(df_qdap_0713)
-rm(df_qdap_0714)
-rm(df_qdap_0715)
-rm(df_qdap_0716)
-rm(df_qdap_0717)
-rm(df_qdap_0718)
-rm(df_qdap_0719)
-rm(df_qdap_0720)
-rm(df_qdap_0721)
-rm(df_qdap_0722)
-rm(df_qdap_0723)
-
 save(corp_0704, file = "backups/corp_0704.rda")
 save(corp_0705, file = "backups/corp_0705.rda")
 save(corp_0706, file = "backups/corp_0706.rda")
@@ -797,32 +659,6 @@ save(corp_0721, file = "backups/corp_0721.rda")
 save(corp_0722, file = "backups/corp_0722.rda")
 save(corp_0723, file = "backups/corp_0723.rda")
 
-rm(corp_0704)
-rm(corp_0705)
-rm(corp_0706)
-rm(corp_0707)
-rm(corp_0708)
-rm(corp_0709)
-rm(corp_0710)
-rm(corp_0711)
-rm(corp_0712)
-rm(corp_0713)
-rm(corp_0714)
-rm(corp_0715)
-rm(corp_0716)
-rm(corp_0717)
-rm(corp_0718)
-rm(corp_0719)
-rm(corp_0720)
-rm(corp_0721)
-rm(corp_0722)
-rm(corp_0723)
-
-
-
-#### EDA ####
-
-
 ################
 ##   3. LDA   ##
 ################
@@ -839,29 +675,11 @@ library(wordcloud)
 #### Coherence Values ####
 
 # Create sample data frame
-
-df_sample_0704 <- df_f_0704 %>% slice_sample(n = 100)
-df_sample_0705 <- df_f_0705 %>% slice_sample(n = 100)
-df_sample_0706 <- df_f_0706 %>% slice_sample(n = 100)
-df_sample_0707 <- df_f_0707 %>% slice_sample(n = 100)
-df_sample_0708 <- df_f_0708 %>% slice_sample(n = 100)
-df_sample_0709 <- df_f_0709 %>% slice_sample(n = 100)
-df_sample_0710 <- df_f_0710 %>% slice_sample(n = 100)
-df_sample_0711 <- df_f_0711 %>% slice_sample(n = 100)
-df_sample_0712 <- df_f_0712 %>% slice_sample(n = 100)
-df_sample_0713 <- df_f_0713 %>% slice_sample(n = 100)
-df_sample_0714 <- df_f_0714 %>% slice_sample(n = 100)
-df_sample_0715 <- df_f_0715 %>% slice_sample(n = 100)
-df_sample_0716 <- df_f_0716 %>% slice_sample(n = 100)
-df_sample_0717 <- df_f_0717 %>% slice_sample(n = 100)
-df_sample_0718 <- df_f_0718 %>% slice_sample(n = 100)
-df_sample_0719 <- df_f_0719 %>% slice_sample(n = 100)
-df_sample_0720 <- df_f_0720 %>% slice_sample(n = 100)
-df_sample_0721 <- df_f_0721 %>% slice_sample(n = 100)
-df_sample_0722 <- df_f_0722 %>% slice_sample(n = 100)
-df_sample_0723 <- df_f_0723 %>% slice_sample(n = 100)
-
-df_sample <- bind_rows(df_sample_0704, df_sample_0705, df_sample_0706, df_sample_0707, df_sample_0708, df_sample_0709, df_sample_0710, df_sample_0711, df_sample_0712, df_sample_0713, df_sample_0714, df_sample_0715, df_sample_0716, df_sample_0717, df_sample_0718, df_sample_0719, df_sample_0720, df_sample_0721, df_sample_0722, df_sample_0723)
+# Repeat "df_sample_0704 <- df_f_0704 %>% slice_sample(n = 100)" to 0723
+df_names <- ls(pattern = "^df_f_07(04|0[5-9]|1[0-9]|2[0-3])$")
+df_sample <- mget(df_names) %>%
+  map(~ slice_sample(.x, n = 100)) %>%
+  bind_rows()
 
 df_sample <- df_sample %>%
   filter(str_trim(cleanedText) != "")
@@ -901,7 +719,7 @@ ggplot(coherence_data, aes(x = k, y = coherence)) +
   labs(title = "Coherence vs. Number of Topics", x = "Number of Topics (k)", y = "Coherence Score") +
   theme_minimal()
 
-## Decided 4 topics
+# Decided 4 topics
 
 #### 0.05-0.95? ####
 term_freqs <- col_sums(dtm_all)
@@ -952,17 +770,12 @@ LDA4 <- LDA(dtm_f_all, control = list(seed = 33), k = 4)
 save(LDA4, file = "backups/LDA4.rda")
 
 top_terms <- terms(LDA4, 20)
-top_terms$
-
 dominant_topics <- get_topics(LDA4)
-dominant_topics
-
 dominant_topics_df <- as.data.frame(dominant_topics)
 gamma_df <- as.data.frame(LDA4@gamma)
 
 df_ff_all <- bind_cols(df_f_all, dominant_topics_df, gamma_df)
 df_ff_all <- df_ff_all %>% rename("topic1" = V1) %>% rename("topic2" = V2) %>% rename("topic3" = V3) %>% rename("topic4" = V4)
-
 save(df_ff_all, file = "backups/df_ff_all.rda")
 
 #### EDA ####
@@ -1118,9 +931,6 @@ ggplot(df_ff_all_T1, aes(x = date, fill = like_category)) +
   labs(title = "Boxplot of Like Count (log scale) for Topic 1 by Date", x = "Date", y = "Log(Like Count + 1)") +
   scale_x_date(date_breaks = "1 day", date_labels = "%d") +
   theme_minimal()
-
-
-
 
 #############################
 ##  4. Sentiment Analysis  ##
@@ -1598,7 +1408,6 @@ ABSA_neg <- ABSA_all %>%
   mutate(logLikeCount = log(as.numeric(likeCount) + 1))
 
 cor_pos <- cor(ABSA_pos$logLikeCount, ABSA_pos$pos, method = "pearson")
-cor_pos
 
 model_pos <- lm(likeCount ~ pos, data = ABSA_pos)
 summary(model_pos)
@@ -1616,9 +1425,6 @@ summary(model_neg_com)
 # ggplot(ABSA_neg, aes(x = logLikeCount, y = compound)) +
 #   geom_point(size = 0.1) +
 #   labs(title = "Correlation between likeCount and Compound Score", x = "likeCount", y = "compound")
-
-
-
 
 ###########################################
 ##  5. Interrupted Time Series Analysis  ##
@@ -1647,7 +1453,6 @@ ggplot(ITS_Trump, aes(x = time, y = avg_compound)) +
   geom_line(aes(time, model_T1.predictions), color="black", lty=1) +
   geom_point(alpha = 0.3)
 
-
 #### ITS on Biden ####
 ITS_Biden <- ABSA_Biden_Summary %>%
   select(avg_compound, date) %>%
@@ -1667,7 +1472,6 @@ ggplot(ITS_Biden, aes(x = time, y = avg_compound)) +
   geom_line(aes(time, model_B1.predictions), color="black", lty=1) +
   geom_point(alpha = 0.3)
 
-
 #### ITS on Assassination ####
 ITS_Assassination <- ABSA_Assassination_Summary %>%
   select(avg_compound, date) %>%
@@ -1686,8 +1490,6 @@ ggplot(ITS_Assassination, aes(x = time, y = avg_compound)) +
   geom_ribbon(aes(ymin = model_A1.predictions - (1.96 * model_A1.se), ymax = model_A1.predictions + (1.96 * model_A1.se)), fill = "lightgreen") +
   geom_line(aes(time, model_A1.predictions), color="black", lty=1) +
   geom_point(alpha = 0.3)
-
-
 
 ###########################################
 ##  6. Sentiment vs Topic vs Engagement  ##
@@ -1711,6 +1513,3 @@ summary(model_sent_topic_pos)
 
 model_sent_topic_neg <- lm(likeCount ~ compound + as.factor(dominant_topics), data = df_sent_topic_neg)
 summary(model_sent_topic_neg)
-
-
-
